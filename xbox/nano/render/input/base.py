@@ -139,8 +139,8 @@ class InputHandler(Sink):
         log.debug('Button: %s - %s' % (
             GamepadButton(button), GamepadButtonState(state)
         ))
-
-        self._frame(**{field_name: current_val + 1})
+        new_val = (current_val + 1) % 256
+        self._frame(**{field_name: new_val})
         self.send_frame()
 
     def set_axis(self, axis, value):

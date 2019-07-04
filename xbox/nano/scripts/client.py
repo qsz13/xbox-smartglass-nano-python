@@ -11,6 +11,8 @@ from xbox.nano.manager import NanoManager
 from xbox.nano.render.client import SDLClient
 from xbox.nano.scripts import TOKENS_FILE
 
+log = logging.getLogger(__name__)
+
 
 def main():
     parser = argparse.ArgumentParser(description="Basic smartglass client")

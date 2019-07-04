@@ -193,7 +193,7 @@ class AudioChannel(Channel):
         self.protocol.channel_open(flags, self.id)
 
     def on_close(self, flags):
-        raise NotImplementedError()
+        self.client.close()
 
     def client_handshake(self, audio_format):
         payload = factory.audio.client_handshake(
@@ -240,7 +240,7 @@ class ChatAudioChannel(Channel):
         self.protocol.channel_open(flags, self.id)
 
     def on_close(self, flags):
-        raise NotImplementedError()
+        self.client.close()
 
     def on_client_handshake(self, msg):
         log.debug("ChatAudioChannel client handshake", extra={'_msg': msg})
@@ -280,7 +280,7 @@ class InputChannel(Channel):
         self.protocol.channel_open(flags, self.id)
 
     def on_close(self, flags):
-        raise NotImplementedError()
+        pass
 
     def client_handshake(self, max_touches=10):
         payload = factory.input.client_handshake(

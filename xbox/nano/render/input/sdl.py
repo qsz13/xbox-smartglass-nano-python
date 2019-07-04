@@ -35,7 +35,7 @@ SDL_AXIS_MAP = {
     sdl2.SDL_CONTROLLER_AXIS_LEFTX: GamepadAxis.LeftThumbstick_X,
     sdl2.SDL_CONTROLLER_AXIS_LEFTY: GamepadAxis.LeftThumbstick_Y,
     sdl2.SDL_CONTROLLER_AXIS_RIGHTX: GamepadAxis.RightThumbstick_X,
-    sdl2.SDL_CONTROLLER_AXIS_RIGHTY: GamepadAxis.LeftThumbstick_Y
+    sdl2.SDL_CONTROLLER_AXIS_RIGHTY: GamepadAxis.RightThumbstick_Y
 }
 
 SDL_STATE_MAP = {
@@ -95,11 +95,21 @@ class SDLInputHandler(InputHandler):
 
             elif event.type == sdl2.SDL_CONTROLLERBUTTONUP:
                 button = event.cbutton.button
+
                 self.set_button(
                     SDL_BUTTON_MAP[button], GamepadButtonState.Released
                 )
 
             elif event.type == sdl2.SDL_CONTROLLERAXISMOTION:
+
                 axis = event.caxis.axis
                 value = event.caxis.value
+                if axis == sdl2.SDL_CONTROLLER_AXIS_TRIGGERLEFT or axis == sdl2.SDL_CONTROLLER_AXIS_TRIGGERRIGHT:
+                    value = int(value / 32767 * 255)
+
+                elif axis == sdl2.SDL_CONTROLLER_AXIS_LEFTY or axis == sdl2.SDL_CONTROLLER_AXIS_RIGHTY:
+                    value = -int(value / 32767 * 127)
+                else:
+                    value = int(value / 32767 * 127)
+
                 self.set_axis(SDL_AXIS_MAP[axis], value)
