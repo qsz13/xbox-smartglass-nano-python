@@ -106,7 +106,6 @@ class VideoChannel(Channel):
         super(VideoChannel, self).__init__(*args, **kwargs)
         self._frame_buf = {}
         self._frame_expiry_time = 3.0
-        self._render_queue = deque()
 
     def on_message(self, msg):
         if VideoPayloadType.Data == msg.header.streamer.type:
@@ -136,41 +135,41 @@ class VideoChannel(Channel):
         self.reference_timestamp = payload.reference_timestamp
         self.client_handshake(payload.formats[0])
         # You could set initial video format here
-        # self.protocol.get_channel(ChannelClass.Control).change_video_quality(VideoQuality.Middle)
+        self.protocol.get_channel(ChannelClass.Control).change_video_quality(VideoQuality.VeryHigh)
         self.control()
 
     def on_data(self, msg):
-        flags = msg.payload.flags
-        frame_id = msg.payload.frame_id
-        timestamp = msg.payload.timestamp
+
         packet_count = msg.payload.packet_count
 
         if packet_count == 1:
-            self._render_queue.append((
-                frame_id, flags, timestamp, msg.payload.data
-            ))
+            self.client.render_video(msg.payload.data)
         else:
+            frame_id = msg.payload.frame_id
             if frame_id not in self._frame_buf:
                 # msg list, current count, packet count
-                frame_buf = [[msg], 1, packet_count, time.time()]
+                frame_buf = [[msg], packet_count, time.time()]
                 self._frame_buf[frame_id] = frame_buf
             else:
                 frame_buf = self._frame_buf[frame_id]
                 frame_buf[0].append(msg)
-                frame_buf[1] += 1
 
             # current count == packet count
-            if frame_buf[1] == frame_buf[2]:
+            if len(frame_buf[0]) == frame_buf[1]:
                 data_buf = frame_buf[0]
-                data_buf.sort(key=lambda x: x.payload.offset)
+                # data_buf.sort(key=lambda x: x.payload.offset)
                 frame = b''.join([packet.payload.data for packet in data_buf])
 
                 self.client.render_video(frame)
                 del self._frame_buf[frame_id]
 
         # Discard frames older than self._frame_expiry_time
+        # start = time.time()
+
         self._frame_buf = {k: v for (k, v) in self._frame_buf.items()
-                           if (time.time() - v[3]) < self._frame_expiry_time}
+                           if (time.time() - v[2]) < self._frame_expiry_time}
+
+        # print((time.time() - start) * 1000000)
 
     def control(self, start_stream=True):
         # TODO
@@ -344,8 +343,8 @@ class InputFeedbackChannel(Channel):
         # TODO: Do not hardcode desktop width/height
         payload = factory.input.server_handshake(
             protocol_version=3,
-            desktop_width=1280,
-            desktop_height=720,
+            desktop_width=1920,
+            desktop_height=1080,
             max_touches=0,
             initial_frame_id=frame_id
         )

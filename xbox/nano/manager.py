@@ -32,8 +32,8 @@ DEFAULT_CONFIG = {
 
     "videoFecType": "0",
     "videoFecLevel": "3",
-    "videoMaximumWidth": "1280",
-    "videoMaximumHeight": "720",
+    "videoMaximumWidth": "1920",
+    "videoMaximumHeight": "1080",
     "videoMaximumFrameRate": "60",
     "videoPacketUtilization": "0",
     "videoPacketDefragTimeoutMs": "16",

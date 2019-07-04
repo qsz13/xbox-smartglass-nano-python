@@ -65,3 +65,4 @@ target/
 # Node
 node_modules
 
+venv

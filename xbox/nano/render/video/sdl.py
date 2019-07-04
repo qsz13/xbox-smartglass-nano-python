@@ -66,14 +66,14 @@ class SDLVideoRenderer(Sink):
         self._texture = sdl2.SDL_CreateTexture(
             self._renderer.sdlrenderer, pixel_fmt,
             sdl2.SDL_TEXTUREACCESS_STREAMING,
-            fmt.width, fmt.height
+            1920, 1080
         )
 
     def render(self, data):
         renderer = self._renderer.sdlrenderer
         try:
             for frame in self._decoder.decode(data):
-                self._lock.acquire()
+                # self._lock.acquire()
                 intp = POINTER(c_ubyte)
                 sdl2.SDL_UpdateYUVTexture(
                     self._texture, None,
@@ -81,8 +81,8 @@ class SDLVideoRenderer(Sink):
                     cast(frame.planes[1].buffer_ptr, intp), frame.planes[1].line_size,
                     cast(frame.planes[2].buffer_ptr, intp), frame.planes[2].line_size,
                 )
-                self._lock.release()
-                sdl2.SDL_RenderClear(renderer)
+                # self._lock.release()
+                # sdl2.SDL_RenderClear(renderer)
                 sdl2.SDL_RenderCopy(renderer, self._texture, None, None)
                 sdl2.SDL_RenderPresent(renderer)
         except Exception as e:

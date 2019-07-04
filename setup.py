@@ -41,7 +41,7 @@ setup(
         'xbox-smartglass-core>=1.0.12',
         'marshmallow-objects',
         'marshmallow-enum',
-        'av==6.1.0',
+        'av==6.2.0',
         'PySDL2'
     ],
     tests_require=[
