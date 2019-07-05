@@ -1,7 +1,6 @@
 import time
 import random
 import logging
-from collections import deque
 
 from xbox.nano import factory
 from xbox.nano.packet import audio
@@ -164,12 +163,10 @@ class VideoChannel(Channel):
                 del self._frame_buf[frame_id]
 
         # Discard frames older than self._frame_expiry_time
-        # start = time.time()
 
         self._frame_buf = {k: v for (k, v) in self._frame_buf.items()
                            if (time.time() - v[2]) < self._frame_expiry_time}
 
-        # print((time.time() - start) * 1000000)
 
     def control(self, start_stream=True):
         # TODO

@@ -45,6 +45,7 @@ class NanoProtocol(object):
         self.control_protocol.on_message += self._on_control_message
         self.streamer_protocol.on_message += self._on_streamer_message
 
+
     def start(self):
         self.control_protocol.start()
         self.streamer_protocol.start()
@@ -131,6 +132,7 @@ class NanoProtocol(object):
             log.warning("Unknown payload type", extra={'_msg': msg})
 
     def _on_streamer_message(self, msg):
+
         channel_id = msg.header.ssrc.channel_id
 
         if channel_id not in self.channels:

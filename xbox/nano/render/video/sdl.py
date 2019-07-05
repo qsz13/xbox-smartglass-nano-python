@@ -1,5 +1,8 @@
 import logging
 import threading
+import time
+import traceback
+from _ctypes import resize
 from ctypes import cast, c_ubyte, POINTER
 
 import sdl2
@@ -73,6 +76,7 @@ class SDLVideoRenderer(Sink):
         renderer = self._renderer.sdlrenderer
         try:
             for frame in self._decoder.decode(data):
+                frame = frame.reformat(width=1920, height=1080, format='yuv420p')
                 # self._lock.acquire()
                 intp = POINTER(c_ubyte)
                 sdl2.SDL_UpdateYUVTexture(
@@ -82,11 +86,13 @@ class SDLVideoRenderer(Sink):
                     cast(frame.planes[2].buffer_ptr, intp), frame.planes[2].line_size,
                 )
                 # self._lock.release()
-                # sdl2.SDL_RenderClear(renderer)
+                sdl2.SDL_RenderClear(renderer)
                 sdl2.SDL_RenderCopy(renderer, self._texture, None, None)
                 sdl2.SDL_RenderPresent(renderer)
         except Exception as e:
+
             log.debug('SDLVideoRenderer.render: {0}'.format(e))
+            traceback.print_exc()
 
     def pump(self):
         sdl2.SDL_PumpEvents()

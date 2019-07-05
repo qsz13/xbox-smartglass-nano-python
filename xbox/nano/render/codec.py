@@ -1,10 +1,13 @@
 import av
 from xbox.nano.enum import VideoCodec, AudioCodec
 
+hwaccel = {'device_type_name': 'videotoolbox'}
+
 
 class FrameDecoder(object):
     def __init__(self, codec_name):
-        self._decoder = av.Codec(codec_name, 'r').create()
+
+        self._decoder = av.Codec(codec_name, 'r').create(hwaccel=hwaccel)
 
     @classmethod
     def video(cls, codec_id):
