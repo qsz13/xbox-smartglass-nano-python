@@ -7,6 +7,8 @@ from xbox.nano.render.audio.aac import AACFrame, AACProfile, AACResampler
 
 log = logging.getLogger(__name__)
 
+AUDIO_QUEUE_SIZE_MAX_RATIO = 1.5
+
 
 class AudioRenderError(Exception):
     pass
@@ -47,16 +49,14 @@ class SDLAudioRenderer(Sink):
         self._sample_rate = fmt.sample_rate
         self._decoder = FrameDecoder.audio(fmt.codec)
 
-        dummy_callback = sdl2.SDL_AudioCallback()
-
         target_spec = sdl2.SDL_AudioSpec(
             self._sample_rate, sdl_audio_fmt, self._channels,
-            self._sample_size, dummy_callback
+            self._sample_size
         )
 
         self._audio_spec = sdl2.SDL_AudioSpec(
             self._sample_rate, sdl_audio_fmt, self._channels,
-            self._sample_size, dummy_callback
+            self._sample_size
         )
 
         self._dev = sdl2.SDL_OpenAudioDevice(
@@ -92,3 +92,6 @@ class SDLAudioRenderer(Sink):
             sdl2.SDL_QueueAudio(
                 self._dev, audio_data, len(audio_data)
             )
+            size = sdl2.SDL_GetQueuedAudioSize(self._dev)
+            if size > self._sample_rate*AUDIO_QUEUE_SIZE_MAX_RATIO:
+                sdl2.SDL_ClearQueuedAudio(self._dev)

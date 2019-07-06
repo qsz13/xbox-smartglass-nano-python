@@ -167,7 +167,6 @@ class VideoChannel(Channel):
         self._frame_buf = {k: v for (k, v) in self._frame_buf.items()
                            if (time.time() - v[2]) < self._frame_expiry_time}
 
-
     def control(self, start_stream=True):
         # TODO
         if start_stream:

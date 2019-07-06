@@ -45,7 +45,6 @@ class NanoProtocol(object):
         self.control_protocol.on_message += self._on_control_message
         self.streamer_protocol.on_message += self._on_streamer_message
 
-
     def start(self):
         self.control_protocol.start()
         self.streamer_protocol.start()
